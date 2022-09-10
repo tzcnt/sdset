@@ -64,6 +64,14 @@ impl<'a, T: Ord> Difference<'a, T> {
         }
         Ok(())
     }
+
+    fn iter(self) -> DifferenceIter<'a, T>
+    {
+        return DifferenceIter {
+            a: self.a,
+            b: self.b
+        };
+    }
 }
 
 impl<'a, T: Ord + Clone> SetOperation<T> for Difference<'a, T> {
@@ -79,6 +87,80 @@ impl<'a, T: Ord> SetOperation<&'a T> for Difference<'a, T> {
     where C: Collection<&'a T>
     {
         self.extend_collection(output, Collection::extend)
+    }
+}
+
+struct DifferenceIter<'a, It> {
+    a: &'a [It],
+    b: &'a [It],
+    next: Option<It>
+}
+
+impl<'a, It: Ord> Iterator for DifferenceIter<'a, It> {
+    type Item = &'a It;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            if self.a.len() == 0 {
+                return None;
+            }
+            if self.b.len() == 0 {
+                let result = &self.a[0];
+                self.a = &self.a[1..];
+                return Some(result);
+            }
+            let a = &self.a[0];
+            self.b = exponential_offset_ge(self.b, a);
+            if self.a[0] == self.b[0] {
+                self.a = &self.a[1..];
+                self.b = &self.b[1..];
+            } else {
+                let b = &self.b[0];
+                if a > b {
+                } else {
+                    self.a = &self.a[1..];
+                }
+                return Some(a);
+            }
+        }
+        
+        if let Some(first) = self.a.first() {
+            self.b = exponential_offset_ge(self.b, first);
+            let minimum = self.b.first();
+
+            match minimum {
+                Some(min) if min == first => {
+                    self.a = &self.a[1..];
+                },
+                Some(min) => {
+                    let off = self.a.iter().take_while(|&x| x < min).count();
+                    extend(output, &self.a[..off])?;
+
+                    self.a = &self.a[off..];
+                },
+                None => {
+                    extend(output, self.a)?;
+                    break;
+                },
+            }
+        }
+        return None;
+    }
+}
+
+impl<'a, T: Ord> IntoIterator for Difference<'a, T> {
+    type Item = &'a T;
+    type IntoIter = DifferenceIter<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        return self.iter();
+    }
+}
+
+impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
+    type Item = &'a T;
+    type IntoIter = DifferenceIter<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        return self.iter();
     }
 }
 
