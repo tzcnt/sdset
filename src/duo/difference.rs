@@ -66,7 +66,7 @@ impl<'a, T: Ord> Difference<'a, T> {
         Ok(())
     }
 
-    fn iter(self) -> DifferenceIter<'a, T>
+    fn iter(&self) -> DifferenceIter<'a, T>
     {
         return DifferenceIter {
             a: self.a,
@@ -91,10 +91,9 @@ impl<'a, T: Ord> SetOperation<&'a T> for Difference<'a, T> {
     }
 }
 
-struct DifferenceIter<'a, It> {
+pub struct DifferenceIter<'a, It> {
     a: &'a [It],
     b: &'a [It],
-    next: Option<It>
 }
 
 impl<'a, It: Ord> Iterator for DifferenceIter<'a, It> {
@@ -105,47 +104,22 @@ impl<'a, It: Ord> Iterator for DifferenceIter<'a, It> {
             if self.a.len() == 0 {
                 return None;
             }
+            let first_a = &self.a[0];
+            self.b = exponential_offset_ge(self.b, first_a);
             if self.b.len() == 0 {
-                let result = &self.a[0];
+                let first_a = &self.a[0];
                 self.a = &self.a[1..];
-                return Some(result);
+                return Some(first_a);
             }
-            let a = &self.a[0];
-            self.b = exponential_offset_ge(self.b, a);
-            if self.a[0] == self.b[0] {
+            if first_a == &self.b[0] {
                 self.a = &self.a[1..];
                 self.b = &self.b[1..];
-            } else {
-                let b = &self.b[0];
-                if a > b {
-                } else {
-                    self.a = &self.a[1..];
-                }
-                return Some(a);
+                continue;
+            } else { // b > a
+                self.a = &self.a[1..];
+                return Some(first_a);
             }
         }
-        
-        if let Some(first) = self.a.first() {
-            self.b = exponential_offset_ge(self.b, first);
-            let minimum = self.b.first();
-
-            match minimum {
-                Some(min) if min == first => {
-                    self.a = &self.a[1..];
-                },
-                Some(min) => {
-                    let off = self.a.iter().take_while(|&x| x < min).count();
-                    extend(output, &self.a[..off])?;
-
-                    self.a = &self.a[off..];
-                },
-                None => {
-                    extend(output, self.a)?;
-                    break;
-                },
-            }
-        }
-        return None;
     }
 }
 
@@ -167,46 +141,91 @@ impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::set::{sort_dedup_vec, SetBuf};
+    mod set_to_set {
+        use super::super::*;
+        use crate::set::{sort_dedup_vec, SetBuf};
+        #[test]
+        fn two_slices() {
+            let a = &[1, 2, 3];
+            let b = &[2, 4];
 
-    #[test]
-    fn two_slices() {
-        let a = &[1, 2, 3];
-        let b = &[2, 4];
+            let diff: SetBuf<i32> = Difference { a: a, b: b }.into_set_buf();
+            assert_eq!(&diff[..], &[1, 3]);
+        }
 
-        let union_: SetBuf<i32> = Difference { a: a, b: b }.into_set_buf();
-        assert_eq!(&union_[..], &[1, 3]);
+        #[test]
+        fn two_slices_special_case() {
+            let a = &[1, 2, 3];
+            let b = &[3];
+
+            let diff: SetBuf<i32> = Difference { a: a, b: b }.into_set_buf();
+            assert_eq!(&diff[..], &[1, 2]);
+        }
+
+        quickcheck! {
+            fn qc_difference(a: Vec<i32>, b: Vec<i32>) -> bool {
+                use std::collections::BTreeSet;
+                use std::iter::FromIterator;
+
+                let mut a = a;
+                let mut b = b;
+
+                sort_dedup_vec(&mut a);
+                sort_dedup_vec(&mut b);
+
+                let x: SetBuf<i32> = Difference { a: &a, b: &b }.into_set_buf();
+
+                let a = BTreeSet::from_iter(a);
+                let b = BTreeSet::from_iter(b);
+                let y = a.difference(&b);
+                let y: Vec<_> = y.cloned().collect();
+
+                x.as_slice() == y.as_slice()
+            }
+        }
     }
 
-    #[test]
-    fn two_slices_special_case() {
-        let a = &[1, 2, 3];
-        let b = &[3];
+    mod set_to_iter {
+        use super::super::*;
+        use crate::set::{sort_dedup_vec, SetBuf};
+        #[test]
+        fn two_slices() {
+            let a = &[1, 2, 3];
+            let b = &[2, 4];
 
-        let union_: SetBuf<i32> = Difference { a: a, b: b }.into_set_buf();
-        assert_eq!(&union_[..], &[1, 2]);
-    }
+            let diff: Vec<i32> = Difference { a: a, b: b }.into_iter().cloned().collect();
+            assert_eq!(&diff[..], &[1, 3]);
+        }
 
-    quickcheck! {
-        fn qc_difference(a: Vec<i32>, b: Vec<i32>) -> bool {
-            use std::collections::BTreeSet;
-            use std::iter::FromIterator;
+        #[test]
+        fn two_slices_special_case() {
+            let a = &[1, 2, 3];
+            let b = &[3];
 
-            let mut a = a;
-            let mut b = b;
+            let diff: Vec<i32> = Difference { a: a, b: b }.into_iter().cloned().collect();
+            assert_eq!(&diff[..], &[1, 2]);
+        }
 
-            sort_dedup_vec(&mut a);
-            sort_dedup_vec(&mut b);
+        quickcheck! {
+            fn qc_difference(a: Vec<i32>, b: Vec<i32>) -> bool {
+                use std::collections::BTreeSet;
+                use std::iter::FromIterator;
 
-            let x: SetBuf<i32> = Difference { a: &a, b: &b }.into_set_buf();
+                let mut a = a;
+                let mut b = b;
 
-            let a = BTreeSet::from_iter(a);
-            let b = BTreeSet::from_iter(b);
-            let y = a.difference(&b);
-            let y: Vec<_> = y.cloned().collect();
+                sort_dedup_vec(&mut a);
+                sort_dedup_vec(&mut b);
 
-            x.as_slice() == y.as_slice()
+                let x: Vec<i32> = Difference { a: &a, b: &b }.into_iter().cloned().collect();
+
+                let a = BTreeSet::from_iter(a);
+                let b = BTreeSet::from_iter(b);
+                let y = a.difference(&b);
+                let y: Vec<_> = y.cloned().collect();
+
+                x.as_slice() == y.as_slice()
+            }
         }
     }
 }
