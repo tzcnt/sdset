@@ -47,12 +47,12 @@ impl<'a, T: Ord> Union<'a, T> {
         output.reserve(min_len)?;
 
         while !self.a.is_empty() && !self.b.is_empty() {
-            let a = &self.a[0];
-            let b = &self.b[0];
+            let first_a = &self.a[0];
+            let first_b = &self.b[0];
 
-            match a.cmp(&b) {
+            match first_a.cmp(&first_b) {
                  Ordering::Less => {
-                    let off = self.a.iter().take_while(|&x| x < b).count();
+                    let off = self.a.iter().take_while(|&x| x < first_b).count();
                     extend(output, &self.a[..off])?;
 
                     self.a = &self.a[off..];
@@ -65,7 +65,7 @@ impl<'a, T: Ord> Union<'a, T> {
                     self.b = &self.b[off..];
                  },
                  Ordering::Greater => {
-                    let off = self.b.iter().take_while(|&x| x < a).count();
+                    let off = self.b.iter().take_while(|&x| x < first_a).count();
                     extend(output, &self.b[..off])?;
 
                     self.b = &self.b[off..];

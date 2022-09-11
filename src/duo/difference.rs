@@ -117,13 +117,12 @@ impl<'a, T: Ord> Iterator for DifferenceIter<'a, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            if self.a.len() == 0 {
+            if self.a.is_empty() {
                 return None;
             }
             let first_a = &self.a[0];
             self.b = exponential_offset_ge(self.b, first_a);
-            if self.b.len() == 0 {
-                let first_a = &self.a[0];
+            if self.b.is_empty() {
                 self.a = &self.a[1..];
                 return Some(first_a);
             }

@@ -79,12 +79,12 @@ where F: Fn(&T) -> K,
     where C: Collection<X>,
           E: Fn(&mut C, &'a [T]) -> Result<(), C::Error>,
     {
-        while let Some(first) = self.a.first().map(|x| (self.f)(x)) {
-            self.b = exponential_offset_ge_by_key(self.b, &first, &self.g);
+        while let Some(first_a) = self.a.first().map(|x| (self.f)(x)) {
+            self.b = exponential_offset_ge_by_key(self.b, &first_a, &self.g);
 
             match self.b.first().map(|x| (self.g)(x)) {
                 Some(min) => {
-                    if min == first {
+                    if min == first_a {
                         self.a = &self.a[1..];
                         // cannot advance b since we support duplicate relations
                     } else {
@@ -180,15 +180,15 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            if self.a.len() == 0 {
+            if self.a.is_empty() {
                 return None;
             }
             let first_a = (self.f)(&self.a[0]);
             self.b = exponential_offset_ge_by_key(self.b, &first_a, &self.g);
-            if self.b.len() == 0 {
-                let first_a = &self.a[0];
+            if self.b.is_empty() {
+                let result = &self.a[0];
                 self.a = &self.a[1..];
-                return Some(first_a);
+                return Some(result);
             }
             if first_a == (self.g)(&self.b[0]) {
                 self.a = &self.a[1..];
@@ -250,15 +250,15 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            if self.a.len() == 0 {
+            if self.a.is_empty() {
                 return None;
             }
             let first_a = (self.f)(&self.a[0]);
             self.b = exponential_offset_ge_by_key(self.b, &first_a, &self.g);
-            if self.b.len() == 0 {
-                let first_a = &self.a[0];
+            if self.b.is_empty() {
+                let result = &self.a[0];
                 self.a = &self.a[1..];
-                return Some(first_a);
+                return Some(result);
             }
             if first_a == (self.g)(&self.b[0]) {
                 self.a = &self.a[1..];
