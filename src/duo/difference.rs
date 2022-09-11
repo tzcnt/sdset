@@ -91,6 +91,23 @@ impl<'a, T: Ord> SetOperation<&'a T> for Difference<'a, T> {
     }
 }
 
+
+impl<'a, T: Ord> IntoIterator for Difference<'a, T> {
+    type Item = &'a T;
+    type IntoIter = DifferenceIter<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        return self.iter();
+    }
+}
+
+impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
+    type Item = &'a T;
+    type IntoIter = DifferenceIter<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        return self.iter();
+    }
+}
+
 pub struct DifferenceIter<'a, It> {
     a: &'a [It],
     b: &'a [It],
@@ -120,22 +137,6 @@ impl<'a, It: Ord> Iterator for DifferenceIter<'a, It> {
                 return Some(first_a);
             }
         }
-    }
-}
-
-impl<'a, T: Ord> IntoIterator for Difference<'a, T> {
-    type Item = &'a T;
-    type IntoIter = DifferenceIter<'a, T>;
-    fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
-    }
-}
-
-impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
-    type Item = &'a T;
-    type IntoIter = DifferenceIter<'a, T>;
-    fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
     }
 }
 
