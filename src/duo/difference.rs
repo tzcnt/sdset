@@ -91,7 +91,6 @@ impl<'a, T: Ord> SetOperation<&'a T> for Difference<'a, T> {
     }
 }
 
-
 impl<'a, T: Ord> IntoIterator for Difference<'a, T> {
     type Item = &'a T;
     type IntoIter = DifferenceIter<'a, T>;
@@ -108,13 +107,13 @@ impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
     }
 }
 
-pub struct DifferenceIter<'a, It> {
-    a: &'a [It],
-    b: &'a [It],
+pub struct DifferenceIter<'a, T> {
+    a: &'a [T],
+    b: &'a [T],
 }
 
-impl<'a, It: Ord> Iterator for DifferenceIter<'a, It> {
-    type Item = &'a It;
+impl<'a, T: Ord> Iterator for DifferenceIter<'a, T> {
+    type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
