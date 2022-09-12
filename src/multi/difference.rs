@@ -82,9 +82,9 @@ impl<'a, T: Ord> Difference<'a, T> {
 
     fn iter(&self) -> DifferenceIter<'a, T>
     {
-        return DifferenceIter {
+        DifferenceIter {
             slices: self.slices.clone(),
-        };
+        }
     }
 }
 
@@ -108,9 +108,9 @@ impl<'a, T: Ord> IntoIterator for Difference<'a, T> {
     type Item = &'a T;
     type IntoIter = DifferenceIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return DifferenceIter {
+        DifferenceIter {
             slices: self.slices,
-        };
+        }
     }
 }
 
@@ -118,7 +118,7 @@ impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
     type Item = &'a T;
     type IntoIter = DifferenceIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
