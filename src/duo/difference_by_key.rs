@@ -105,12 +105,12 @@ where F: Fn(&T) -> K,
 
     fn iter(&'a self) -> DifferenceByKeyIter<'a, T, U, F, G, K>
     {
-        return DifferenceByKeyIter {
+        DifferenceByKeyIter {
             a: self.a,
             b: self.b,
             f: &self.f,
             g: &self.g
-        };
+        }
     }
 }
 
@@ -150,7 +150,7 @@ where F: Fn(&T) -> K,
     type Item = &'a T;
     type IntoIter = DifferenceByKeyIter<'a, T, U, F, G, K>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
@@ -215,12 +215,12 @@ where F: Fn(&T) -> K + 'a,
     type Item = &'a T;
     type IntoIter = DifferenceByKeyIterOwning<'a, T, U, F, G, K>;
     fn into_iter(self) -> Self::IntoIter {
-        return DifferenceByKeyIterOwning {
+        Self::IntoIter {
             a: self.a,
             b: self.b,
             f: self.f,
             g: self.g
-        };
+        }
     }
 }
 
@@ -364,7 +364,7 @@ mod tests {
 
     mod set_to_iter {
         use super::super::*;
-        use crate::set::{sort_dedup_vec, SetBuf};
+        use crate::set::sort_dedup_vec;
 
         #[derive(Debug, Clone, PartialEq, Eq)]
         struct Foo {

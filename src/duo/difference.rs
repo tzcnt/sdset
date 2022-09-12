@@ -68,10 +68,10 @@ impl<'a, T: Ord> Difference<'a, T> {
 
     fn iter(&self) -> DifferenceIter<'a, T>
     {
-        return DifferenceIter {
+        DifferenceIter {
             a: self.a,
             b: self.b
-        };
+        }
     }
 }
 
@@ -95,7 +95,7 @@ impl<'a, T: Ord> IntoIterator for Difference<'a, T> {
     type Item = &'a T;
     type IntoIter = DifferenceIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
@@ -103,7 +103,7 @@ impl<'a, T: Ord> IntoIterator for &'a Difference<'a, T> {
     type Item = &'a T;
     type IntoIter = DifferenceIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
@@ -186,7 +186,7 @@ mod tests {
 
     mod set_to_iter {
         use super::super::*;
-        use crate::set::{sort_dedup_vec, SetBuf};
+        use crate::set::sort_dedup_vec;
         #[test]
         fn two_slices() {
             let a = &[1, 2, 3];

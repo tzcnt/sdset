@@ -65,10 +65,10 @@ impl<'a, T: Ord> Intersection<'a, T> {
 
     fn iter(&self) -> IntersectionIter<'a, T>
     {
-        return IntersectionIter {
+        IntersectionIter {
             a: self.a,
             b: self.b
-        };
+        }
     }
 }
 
@@ -92,7 +92,7 @@ impl<'a, T: Ord> IntoIterator for Intersection<'a, T> {
     type Item = &'a T;
     type IntoIter = IntersectionIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
@@ -100,7 +100,7 @@ impl<'a, T: Ord> IntoIterator for &'a Intersection<'a, T> {
     type Item = &'a T;
     type IntoIter = IntersectionIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 

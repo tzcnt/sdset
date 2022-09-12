@@ -1,4 +1,3 @@
-use std::cmp;
 use crate::set::{Set, vec_sets_into_slices};
 use crate::{SetOperation, Collection, exponential_offset_ge};
 

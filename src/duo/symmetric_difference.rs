@@ -80,10 +80,10 @@ impl<'a, T: Ord> SymmetricDifference<'a, T> {
 
     fn iter(&self) -> SymmetricDifferenceIter<'a, T>
     {
-        return SymmetricDifferenceIter {
+        SymmetricDifferenceIter {
             a: self.a,
             b: self.b
-        };
+        }
     }
 }
 
@@ -107,7 +107,7 @@ impl<'a, T: Ord> IntoIterator for SymmetricDifference<'a, T> {
     type Item = &'a T;
     type IntoIter = SymmetricDifferenceIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
@@ -115,7 +115,7 @@ impl<'a, T: Ord> IntoIterator for &'a SymmetricDifference<'a, T> {
     type Item = &'a T;
     type IntoIter = SymmetricDifferenceIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 

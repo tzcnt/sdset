@@ -80,10 +80,10 @@ impl<'a, T: Ord> Union<'a, T> {
 
     fn iter(&self) -> UnionIter<'a, T>
     {
-        return UnionIter {
+        UnionIter {
             a: self.a,
             b: self.b
-        };
+        }
     }
 }
 
@@ -107,7 +107,7 @@ impl<'a, T: Ord> IntoIterator for Union<'a, T> {
     type Item = &'a T;
     type IntoIter = UnionIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
@@ -115,7 +115,7 @@ impl<'a, T: Ord> IntoIterator for &'a Union<'a, T> {
     type Item = &'a T;
     type IntoIter = UnionIter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
-        return self.iter();
+        self.iter()
     }
 }
 
