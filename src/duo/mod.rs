@@ -22,12 +22,14 @@ use crate::set::Set;
 
 mod union;
 mod difference;
+mod iter_difference;
 mod difference_by_key;
 mod intersection;
 mod symmetric_difference;
 
 pub use self::union::Union;
 pub use self::difference::Difference;
+pub use self::iter_difference::IterDifference;
 pub use self::difference_by_key::DifferenceByKey;
 pub use self::intersection::Intersection;
 pub use self::symmetric_difference::SymmetricDifference;
@@ -64,6 +66,49 @@ impl<'a, T> OpBuilder<'a, T> {
     pub fn symmetric_difference(self) -> SymmetricDifference<'a, T> {
         SymmetricDifference::new(self.a, self.b)
     }
+}
+
+/// Type used to make a set operation on two slices only.
+#[derive(Copy, Clone)]
+pub struct IterOpBuilder<T, A, B>
+where
+A: Iterator<Item=T>,
+B: Iterator<Item=T>
+{
+    a: A,
+    b: B,
+}
+
+impl<T, A, B> IterOpBuilder<T, A, B>
+where 
+T: Ord,
+A: Iterator<Item=T>,
+B: Iterator<Item=T>
+{
+    /// Construct a type with two slices.
+    pub fn new(a: A, b: B) -> Self {
+        Self { a, b }
+    }
+
+    // /// Prepare the two slices for the _union_ set operation.
+    // pub fn union(self) -> Union<T> {
+    //     Union::new(self.a, self.b)
+    // }
+
+    // /// Prepare the two slices for the _intersection_ set operation.
+    // pub fn intersection(self) -> IterIntersection<T, A, B> {
+    //     IterIntersection::new(self.a, self.b)
+    // }
+
+    /// Prepare the two slices for the _difference_ set operation.
+    pub fn difference(self) -> IterDifference<T, A, B> {
+        IterDifference::new(self.a, self.b)
+    }
+
+    // /// Prepare the two slices for the _difference_ set operation.
+    // pub fn symmetric_difference(self) -> SymmetricDifference<T> {
+    //     SymmetricDifference::new(self.a, self.b)
+    // }
 }
 
 /// Type used to make a set operation on two slices of different types.
