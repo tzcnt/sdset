@@ -86,8 +86,15 @@ A: Iterator<Item=T>,
 B: Iterator<Item=T>
 {
     /// Construct a type with two slices.
-    pub fn new(a: A, b: B) -> Self {
-        Self { a, b }
+    pub fn new<AIn, BIn>(a: AIn, b: BIn) -> Self
+    where 
+    AIn: IntoIterator<IntoIter=A>,
+    BIn: IntoIterator<IntoIter=B>
+    {
+        Self {
+            a: a.into_iter(),
+            b: b.into_iter()
+        }
     }
 
     // /// Prepare the two slices for the _union_ set operation.

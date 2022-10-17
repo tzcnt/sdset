@@ -36,7 +36,13 @@ A: Iterator<Item=T>,
 B: Iterator<Item=T>
 {
     /// Construct one with slices checked to be sorted and deduplicated.
-    pub fn new(a: A, mut b: B) -> Self {
+    pub fn new<AIn, BIn>(a: AIn, b: BIn) -> Self
+    where 
+    AIn: IntoIterator<IntoIter=A>,
+    BIn: IntoIterator<IntoIter=B>
+    {
+        let a = a.into_iter();
+        let mut b = b.into_iter();
         let next_b = b.next();
         Self {
             iter: IterDifferenceIter {
@@ -157,7 +163,7 @@ mod tests {
             assert_eq!(&result[..], &[1, 3]);
 
             // test iter of values
-            let diff= IterDifference::new(a.into_iter(), b.into_iter());
+            let diff= IterDifference::new(a, b);
             let result: SetBuf<i32>  = diff.into_set_buf();
             assert_eq!(&result[..], &[1, 3]);
         }
@@ -173,7 +179,7 @@ mod tests {
             assert_eq!(&result[..], &[1, 2]);
 
             // test iter of values
-            let diff= IterDifference::new(a.into_iter(), b.into_iter());
+            let diff= IterDifference::new(a, b);
             let result: SetBuf<i32>  = diff.into_set_buf();
             assert_eq!(&result[..], &[1, 2]);
         }
@@ -215,7 +221,7 @@ mod tests {
             assert_eq!(&result[..], &[1, 3]);
 
             // test iter of values
-            let diff= IterDifference::new(a.into_iter(), b.into_iter());
+            let diff= IterDifference::new(a, b);
             let result: Vec<i32> = diff.into_iter().collect();
             assert_eq!(&result[..], &[1, 3]);
         }
@@ -231,7 +237,7 @@ mod tests {
             assert_eq!(&result[..], &[1, 2]);
 
             // test iter of values
-            let diff= IterDifference::new(a.into_iter(), b.into_iter());
+            let diff= IterDifference::new(a, b);
             let result: Vec<i32> = diff.into_iter().collect();
             assert_eq!(&result[..], &[1, 2]);
         }
