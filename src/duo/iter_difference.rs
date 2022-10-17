@@ -158,14 +158,12 @@ mod tests {
             let b = vec![2, 4];
 
             // test iter of references
-            let diff= IterDifference::new(a.iter(), b.iter());
-            let result: SetBuf<i32>  = diff.into_set_buf();
-            assert_eq!(&result[..], &[1, 3]);
+            let diff: SetBuf<i32> = IterDifference::new(a.iter(), b.iter()).into_set_buf();
+            assert_eq!(&diff[..], &[1, 3]);
 
             // test iter of values
-            let diff= IterDifference::new(a, b);
-            let result: SetBuf<i32>  = diff.into_set_buf();
-            assert_eq!(&result[..], &[1, 3]);
+            let diff: SetBuf<i32> = IterDifference::new(a, b).into_set_buf();
+            assert_eq!(&diff[..], &[1, 3]);
         }
 
         #[test]
@@ -174,14 +172,12 @@ mod tests {
             let b = vec![3];
 
             // test iter of references
-            let diff= IterDifference::new(a.iter(), b.iter());
-            let result: SetBuf<i32>  = diff.into_set_buf();
-            assert_eq!(&result[..], &[1, 2]);
+            let diff: SetBuf<i32> = IterDifference::new(a.iter(), b.iter()).into_set_buf();
+            assert_eq!(&diff[..], &[1, 2]);
 
             // test iter of values
-            let diff= IterDifference::new(a, b);
-            let result: SetBuf<i32>  = diff.into_set_buf();
-            assert_eq!(&result[..], &[1, 2]);
+            let diff: SetBuf<i32> = IterDifference::new(a, b).into_set_buf();
+            assert_eq!(&diff[..], &[1, 2]);
         }
 
         quickcheck! {
@@ -216,14 +212,12 @@ mod tests {
             let b = vec![2, 4];
 
             // test iter of references
-            let diff= IterDifference::new(a.iter(), b.iter());
-            let result: Vec<i32> = diff.into_iter().cloned().collect();
-            assert_eq!(&result[..], &[1, 3]);
+            let diff: Vec<i32> = IterDifference::new(a.iter(), b.iter()).into_iter().cloned().collect();
+            assert_eq!(&diff[..], &[1, 3]);
 
             // test iter of values
-            let diff= IterDifference::new(a, b);
-            let result: Vec<i32> = diff.into_iter().collect();
-            assert_eq!(&result[..], &[1, 3]);
+            let diff: Vec<i32> = IterDifference::new(a, b).into_iter().collect();
+            assert_eq!(&diff[..], &[1, 3]);
         }
 
         #[test]
@@ -232,14 +226,12 @@ mod tests {
             let b = vec![3];
 
             // test iter of references
-            let diff= IterDifference::new(a.iter(), b.iter());
-            let result: Vec<i32> = diff.into_iter().cloned().collect();
-            assert_eq!(&result[..], &[1, 2]);
+            let diff: Vec<i32> = IterDifference::new(a.iter(), b.iter()).into_iter().cloned().collect();
+            assert_eq!(&diff[..], &[1, 2]);
 
             // test iter of values
-            let diff= IterDifference::new(a, b);
-            let result: Vec<i32> = diff.into_iter().collect();
-            assert_eq!(&result[..], &[1, 2]);
+            let diff: Vec<i32> = IterDifference::new(a, b).into_iter().collect();
+            assert_eq!(&diff[..], &[1, 2]);
         }
 
         quickcheck! {
