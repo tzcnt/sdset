@@ -21,6 +21,7 @@
 use crate::set::Set;
 
 mod union;
+mod iter_union;
 mod difference;
 mod iter_difference;
 mod difference_by_key;
@@ -29,6 +30,7 @@ mod iter_intersection;
 mod symmetric_difference;
 
 pub use self::union::Union;
+pub use self::iter_union::IterUnion;
 pub use self::difference::Difference;
 pub use self::iter_difference::IterDifference;
 pub use self::difference_by_key::DifferenceByKey;
@@ -99,10 +101,10 @@ B: Iterator<Item=T>
         }
     }
 
-    // /// Prepare the two slices for the _union_ set operation.
-    // pub fn union(self) -> Union<T> {
-    //     Union::new(self.a, self.b)
-    // }
+    /// Prepare the two slices for the _union_ set operation.
+    pub fn union(self) -> IterUnion<T, A, B> {
+        IterUnion::new(self.a, self.b)
+    }
 
     /// Prepare the two slices for the _intersection_ set operation.
     pub fn intersection(self) -> IterIntersection<T, A, B> {
