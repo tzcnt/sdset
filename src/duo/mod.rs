@@ -28,6 +28,7 @@ mod difference_by_key;
 mod intersection;
 mod iter_intersection;
 mod symmetric_difference;
+mod iter_symmetric_difference;
 
 pub use self::union::Union;
 pub use self::iter_union::IterUnion;
@@ -37,6 +38,7 @@ pub use self::difference_by_key::DifferenceByKey;
 pub use self::intersection::Intersection;
 pub use self::iter_intersection::IterIntersection;
 pub use self::symmetric_difference::SymmetricDifference;
+pub use self::iter_symmetric_difference::IterSymmetricDifference;
 
 /// Type used to make a set operation on two slices only.
 #[derive(Copy, Clone)]
@@ -116,10 +118,10 @@ B: Iterator<Item=T>
         IterDifference::new(self.a, self.b)
     }
 
-    // /// Prepare the two slices for the _difference_ set operation.
-    // pub fn symmetric_difference(self) -> SymmetricDifference<T> {
-    //     SymmetricDifference::new(self.a, self.b)
-    // }
+    /// Prepare the two slices for the _difference_ set operation.
+    pub fn symmetric_difference(self) -> IterSymmetricDifference<T, A, B> {
+        IterSymmetricDifference::new(self.a, self.b)
+    }
 }
 
 /// Type used to make a set operation on two slices of different types.
